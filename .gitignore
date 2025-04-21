@@ -1,0 +1,6 @@
+analyzes_results/
+*.mp3
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
