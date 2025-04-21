@@ -1,5 +1,6 @@
 analyzes_results/
 lyrics_output/
+guitar_output/
 *.mp3
 __pycache__/
 *.py[cod]
