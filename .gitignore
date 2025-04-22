@@ -10,3 +10,4 @@ __pycache__/
 .wav
 separated_stems/
 track_separation.png
+.json
