@@ -8,3 +8,5 @@ __pycache__/
 *.pyo
 *.pyd
 .wav
+separated_stems/
+track_separation.png
