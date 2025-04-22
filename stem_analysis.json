@@ -1,0 +1,92 @@
+{
+  "drums": {
+    "rms_mean": 0.10144134610891342,
+    "rms_std": 0.06039326265454292,
+    "centroid_mean": 5751.243766654676,
+    "centroid_std": 1284.4040950485248,
+    "bandwidth_mean": 3829.2454145631223,
+    "bandwidth_std": 507.4459942140327,
+    "onset_count": 1877,
+    "tempo": 135.99917763157896
+  },
+  "bass": {
+    "rms_mean": 0.06856719404459,
+    "rms_std": 0.05350250005722046,
+    "centroid_mean": 1548.6179456989485,
+    "centroid_std": 1990.8171457388871,
+    "bandwidth_mean": 2400.6344973066653,
+    "bandwidth_std": 1562.450595998088,
+    "onset_count": 1253,
+    "tempo": 67.99958881578948
+  },
+  "other": {
+    "rms_mean": 0.0037167351692914963,
+    "rms_std": 0.013591375201940536,
+    "centroid_mean": 6506.9633129855,
+    "centroid_std": 2332.6745587060186,
+    "bandwidth_mean": 4905.378927408053,
+    "bandwidth_std": 1343.9568473921645,
+    "onset_count": 513,
+    "tempo": 135.99917763157896
+  },
+  "vocals": {
+    "rms_mean": 0.009652243927121162,
+    "rms_std": 0.023824959993362427,
+    "centroid_mean": 5211.397629121625,
+    "centroid_std": 1829.7983102118278,
+    "bandwidth_mean": 4382.64360130167,
+    "bandwidth_std": 1496.04609491086,
+    "onset_count": 515,
+    "tempo": 129.19921875
+  },
+  "guitar": {
+    "rms_mean": 0.05679797753691673,
+    "rms_std": 0.040115054696798325,
+    "centroid_mean": 2715.108615474606,
+    "centroid_std": 1969.284524277648,
+    "bandwidth_mean": 2259.010241779218,
+    "bandwidth_std": 1404.641090924179,
+    "onset_count": 1488,
+    "tempo": 68.90625
+  },
+  "piano": {
+    "rms_mean": 0.0004368594672996551,
+    "rms_std": 0.0018300812225788832,
+    "centroid_mean": 6403.509982500667,
+    "centroid_std": 1728.5351818408094,
+    "bandwidth_mean": 5675.3963468023285,
+    "bandwidth_std": 723.3882284878015,
+    "onset_count": 1330,
+    "tempo": 135.99917763157896
+  },
+  "enhanced_vocals": {
+    "rms_mean": 0.008938953280448914,
+    "rms_std": 0.023169247433543205,
+    "centroid_mean": 3916.2538175236837,
+    "centroid_std": 1342.5383283086492,
+    "bandwidth_mean": 3372.234071644008,
+    "bandwidth_std": 1064.1417092172276,
+    "onset_count": 509,
+    "tempo": 129.19921875
+  },
+  "enhanced_guitar": {
+    "rms_mean": 0.07250247150659561,
+    "rms_std": 0.0497586615383625,
+    "centroid_mean": 1962.2284174868162,
+    "centroid_std": 1137.9739272106704,
+    "bandwidth_mean": 1776.7553483250583,
+    "bandwidth_std": 1244.4710667781062,
+    "onset_count": 1450,
+    "tempo": 68.90625
+  },
+  "enhanced_bass": {
+    "rms_mean": 0.09160059690475464,
+    "rms_std": 0.07305990904569626,
+    "centroid_mean": 961.3912365249813,
+    "centroid_std": 1586.1961160378885,
+    "bandwidth_mean": 1730.6009079630041,
+    "bandwidth_std": 1631.3867073414256,
+    "onset_count": 1276,
+    "tempo": 67.99958881578948
+  }
+}

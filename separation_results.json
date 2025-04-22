@@ -1,0 +1,21 @@
+{
+  "audio_file": "songs/nista.mp3",
+  "duration": 402.5875736961451,
+  "sample_rate": 44100,
+  "separation_results": {
+    "stems": [
+      "drums",
+      "bass",
+      "other",
+      "vocals",
+      "guitar",
+      "piano"
+    ],
+    "isolated_instruments": [
+      "enhanced_vocals",
+      "enhanced_guitar",
+      "enhanced_bass"
+    ],
+    "lyrics_extracted": false
+  }
+}

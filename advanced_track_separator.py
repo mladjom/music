@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Advanced Track Separator with Deep Learning
+# Enhanced Advanced Track Separator with Deep Learning
 # Professional-grade music source separation tool
 
 import os
@@ -165,7 +165,7 @@ class AdvancedTrackSeparator:
         except Exception as e:
             print(f"Error during Demucs separation: {e}")
             return False
-    
+
     def separate_with_openunmix(self):
         """Separate tracks using Open-Unmix, an open-source music separation model."""
         if not self.available_models['openunmix']:
@@ -174,7 +174,8 @@ class AdvancedTrackSeparator:
             return False
         
         try:
-            import openunmix
+            import torch
+            from openunmix import separate
             
             # Convert audio to tensor
             audio_tensor = torch.tensor(self.audio_stereo, dtype=torch.float32)
@@ -184,21 +185,22 @@ class AdvancedTrackSeparator:
             
             print("Running OpenUnmix separation...")
             
-            # Run the separation models
-            vocals = openunmix.separate.predict.separate(audio_tensor, rate=self.sr, model_name="umxhq")[0]
-            drums = openunmix.separate.predict.separate(audio_tensor, rate=self.sr, model_name="umxhq-drums")[0]
-            bass = openunmix.separate.predict.separate(audio_tensor, rate=self.sr, model_name="umxhq-bass")[0]
-            
-            # Create 'other' stem by subtracting
-            other = audio_tensor[0] - vocals - drums - bass
+            # Use the current API
+            estimates = separate.predict(
+                audio_tensor,
+                rate=self.sr,
+                device=self.device
+            )
             
             # Store results
-            self.separated_stems["vocals"] = vocals.cpu().numpy()
-            self.separated_stems["drums"] = drums.cpu().numpy()
-            self.separated_stems["bass"] = bass.cpu().numpy()
-            self.separated_stems["other"] = other.cpu().numpy()
+            if isinstance(estimates, dict):
+                for stem_name, audio in estimates.items():
+                    self.separated_stems[stem_name] = audio.cpu().numpy()
+            else:
+                print("Unexpected output format from OpenUnmix")
+                return False
             
-            print("Successfully separated into 4 stems using Open-Unmix")
+            print(f"Successfully separated into {len(estimates)} stems using Open-Unmix")
             return True
         except Exception as e:
             print(f"Error during Open-Unmix separation: {e}")
@@ -662,36 +664,42 @@ class AdvancedTrackSeparator:
         num_waveforms = 1 + len(self.separated_stems) + len(self.isolated_instruments)
         
         # Create figure with appropriate size
-        fig, axs = plt.subplots(num_waveforms, 1, figsize=(12, 2 * num_waveforms))
-        
-        # Plot original waveform
-        axs[0].set_title('Original Audio')
-        librosa.display.waveshow(self.audio, sr=self.sr, ax=axs[0])
-        
-        # Plot each stem
-        for i, (name, audio) in enumerate(self.separated_stems.items(), 1):
-            # Handle both mono and stereo stems
-            if len(audio.shape) > 1 and audio.shape[0] > 1:
-                # For stereo, plot just the first channel for simplicity
-                plot_audio = audio[0]
-            else:
-                plot_audio = audio
-                
-            axs[i].set_title(f'Stem: {name}')
-            librosa.display.waveshow(plot_audio, sr=self.sr, ax=axs[i])
-        
-        # Plot each isolated instrument
-        offset = 1 + len(self.separated_stems)
-        for i, (name, audio) in enumerate(self.isolated_instruments.items(), 0):
-            axs[offset + i].set_title(f'Isolated: {name}')
-            librosa.display.waveshow(audio, sr=self.sr, ax=axs[offset + i])
+        if num_waveforms > 1:
+            fig, axs = plt.subplots(num_waveforms, 1, figsize=(12, 2 * num_waveforms))
+            
+            # Plot original waveform
+            axs[0].set_title('Original Audio')
+            librosa.display.waveshow(self.audio, sr=self.sr, ax=axs[0])
+            
+            # Plot each stem
+            for i, (name, audio) in enumerate(self.separated_stems.items(), 1):
+                # Handle both mono and stereo stems
+                if len(audio.shape) > 1 and audio.shape[0] > 1:
+                    # For stereo, plot just the first channel for simplicity
+                    plot_audio = audio[0]
+                else:
+                    plot_audio = audio
+                    
+                axs[i].set_title(f'Stem: {name}')
+                librosa.display.waveshow(plot_audio, sr=self.sr, ax=axs[i])
+            
+            # Plot each isolated instrument
+            offset = 1 + len(self.separated_stems)
+            for i, (name, audio) in enumerate(self.isolated_instruments.items(), 0):
+                axs[offset + i].set_title(f'Isolated: {name}')
+                librosa.display.waveshow(audio, sr=self.sr, ax=axs[offset + i])
+        else:
+            # If no stems were created, just plot the original audio
+            fig, ax = plt.subplots(figsize=(12, 4))
+            ax.set_title('Original Audio (No stems created)')
+            librosa.display.waveshow(self.audio, sr=self.sr, ax=ax)
         
         plt.tight_layout()
         plt.savefig(output_file)
         print(f"Visualization saved as '{output_file}'")
         
         return fig
-    
+
     def analyze_stems(self):
         """Analyze characteristics of each separated stem."""
         analysis = {}
@@ -777,8 +785,6 @@ class AdvancedTrackSeparator:
             json.dump(analysis, f, indent=2)
         
         print("\nAnalysis saved to 'stem_analysis.json'")
-        return analysis
-    
     def export_to_json(self, filename="separation_results.json"):
         """Export separation metadata to JSON file."""
         export_data = {
@@ -899,22 +905,36 @@ def main():
     extract_lyrics = not args.no_lyrics
     isolate_instruments = not args.no_instrument_isolation
     
-    separator.run_full_separation(
+    separation_success = separator.run_full_separation(
         method=args.method,
         extract_lyrics=extract_lyrics,
         isolate_instruments=isolate_instruments
     )
     
-    # Save outputs
-    separator.save_all_stems(output_dir=args.output_dir)
+    if separation_success:
+        # Save outputs
+        separator.save_all_stems(output_dir=args.output_dir)
+        
+        # Export metadata
+        separator.export_to_json()
+        
+        print(f"\nComplete! All outputs saved to {args.output_dir}/")
+    else:
+        print("\nSeparation failed. Try using a different method or the CPU version.")
     
-    # Visualize and analyze
-    separator.visualize_separation()
-    separator.analyze_stems()
+    # Always try to visualize what we have (even if just the original audio)
+    try:
+        separator.visualize_separation()
+    except Exception as e:
+        print(f"Visualization failed: {e}")
     
-    # Export metadata
-    separator.export_to_json()
-    
-    print(f"\nComplete! All outputs saved to {args.output_dir}/")
+    # Only analyze stems if we have any
+    if separator.separated_stems:
+        try:
+            separator.analyze_stems()
+        except Exception as e:
+            print(f"Stem analysis failed: {e}")
 
 
+if __name__ == "__main__":
+    main()
